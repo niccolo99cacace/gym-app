@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my_first",
-    "slug": "my_first",
+    "name": "gym-app",
+    "slug": "gym-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
