@@ -6,19 +6,23 @@ import {
   TextInput,
   Modal,
   FlatList,
+  ScrollView,
 } from "react-native";
 import { Header, Icon } from "react-native-elements";
 import { useState, useEffect } from "react";
 import ExerciseItem from "../components/ExerciseItem";
+import Timer from "../components/Timer";
 
 function Home(props) {
   const [exercises, setExercises] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalTimerVisible, setIsModalTimerVisible] = useState(false);
   const [name, setName] = useState("");
   const [repetitions, setRepetitions] = useState("");
   const [min, setMin] = useState("");
   const [sec, setSec] = useState("");
   const [isAddButtonEnabled, setIsAddButtonEnabled] = useState(false);
+  const [timerValue, setTimerValue] = useState(8);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -26,6 +30,17 @@ function Home(props) {
 
   const hideModal = () => {
     setIsModalVisible(false);
+  };
+
+  const showModalTimer = (id) => {
+    exercises.forEach((exercise) =>{ if (exercise.id === id) {
+      setTimerValue((exercise.min * 60)+(exercise.sec));
+  }})
+    setIsModalTimerVisible(true);
+  };
+
+  const hideModalTimer = () => {
+    setIsModalTimerVisible(false);
   };
 
   //to remove an Item from the ExercisesList
@@ -79,8 +94,8 @@ function Home(props) {
     const newExercise = {
       name: name,
       repetitions: parseInt(repetitions),
-      min: min,
-      sec: sec,
+      min: parseInt(min),
+      sec: parseInt(sec),
       id: Math.floor(Math.random() * 10000).toString(),
     };
     setExercises([...exercises, newExercise]);
@@ -94,6 +109,14 @@ function Home(props) {
   useEffect(() => {
     setIsAddButtonEnabled(validateInputs());
   }, [name, repetitions, min, sec]);
+
+
+  useEffect(() => {
+    exercises.forEach((exercise) =>{ 
+    if(exercise.repetitions === 0 ) onRemoveItem(exercise.id);
+  })
+  }, [exercises]);
+ 
 
   return (
     <View>
@@ -111,8 +134,9 @@ function Home(props) {
 
 
       <Modal visible={isModalVisible} animationType="slide">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View
-          style={{ flex: 4, justifyContent: "center", alignItems: "center" }}
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <View>
             <Text style={{ fontWeight: "bold" }}>ADD EXERCISE</Text>
@@ -150,11 +174,13 @@ function Home(props) {
           />
           <Text>(Min 0 Max 59)</Text>
         </View>
+        
         <View
           style={{
             flexDirection: "row",
             flex: 1,
             justifyContent: "space-around",
+            marginTop:15
           }}
         >
           <View style={styles.buttonCancel}>
@@ -169,6 +195,7 @@ function Home(props) {
             />
           </View>
         </View>
+        </ScrollView>
       </Modal>
 
 
@@ -179,17 +206,43 @@ function Home(props) {
         data={exercises}
         renderItem={({ item }) => (
           <ExerciseItem
+          showTimer={showModalTimer}
           onDecreaseRepetitions={decreaseRepetitions}
             onRemoveExercise={onRemoveItem}
             title={item.name}
             repetitions={item.repetitions}
-            minutes={item.min}
-            seconds={item.sec}
+            min={item.min}
+            sec={item.sec}
             id={item.id}
           />
         )}
         keyExtractor={(item) => item.id}
       />
+
+
+
+
+
+
+
+
+
+
+  <Modal visible={isModalTimerVisible} >
+  <View
+          style={{ flex: 1, justifyContent: "center" }}
+        >
+    <Timer 
+    initialValue={timerValue}
+    nextExercise={hideModalTimer}></Timer>
+    </View>
+  </Modal>
+
+
+
+
+
+
     </View>
   );
 }

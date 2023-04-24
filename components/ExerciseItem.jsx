@@ -1,25 +1,22 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity,Modal} from 'react-native';
 import { Icon } from 'react-native-elements';
-import Timer from './Timer';
-
-function ExerciseItem({ onDecreaseRepetitions, onRemoveExercise, title, repetitions, minutes, seconds, id}) {
 
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+function ExerciseItem({showTimer, onDecreaseRepetitions, onRemoveExercise, title, repetitions, min, sec, id}) {
+
+
+
   const [showButtons, setShowButtons] = useState(false);
+ 
 
 
 
 
-  const showModal = () => {
-    setIsModalVisible(true);
+ 
+  const  showModalTimer = (id) => {
+    showTimer(id);
   };
-
-  const hideModal = () => {
-    setIsModalVisible(false);
-  };
-
 
 
   const removeExercise = (id) => {
@@ -33,7 +30,8 @@ function ExerciseItem({ onDecreaseRepetitions, onRemoveExercise, title, repetiti
 
 
   return (
-    <View style={styles.container}>
+    <View>
+    
       
       {showButtons && (
         <View style={styles.buttonsContainer}>
@@ -59,32 +57,27 @@ function ExerciseItem({ onDecreaseRepetitions, onRemoveExercise, title, repetiti
      <View>
       <TouchableOpacity style={styles.itemContainer} onPress={() => setShowButtons(!showButtons)}>
         <Text style={styles.itemTitle}>{title}</Text>
-        <Text style={styles.itemTitle}>{id}</Text>
         <View style={styles.detailsContainer}>
           <Text style={styles.itemDetail}>Repetitions: {repetitions}</Text>
           <Text style={styles.itemDetail}>
-            {minutes} min {seconds} sec
+            {min} min {sec} sec
           </Text>
-          <TouchableOpacity style={styles.iconContainer}>
-            <Icon name="fitness-center" type="material" size={24} onPress={() => {decreaseRepetitions(id);}}/>
+          <TouchableOpacity style={styles.iconContainer} onPress={() => {decreaseRepetitions(id);showModalTimer(id);}}>
+            <Icon name="fitness-center" type="material" size={24} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
-      </View>
-
-
-
-  
-
+      
     </View>
+
+ 
+</View>
   );
 }
 export default ExerciseItem;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center', // Cambia 'space-between' in 'center'

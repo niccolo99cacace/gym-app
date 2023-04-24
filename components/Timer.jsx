@@ -3,9 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native
 import Svg, { Circle } from 'react-native-svg';
 import { Audio } from 'expo-av';
 
-const Timer = () => {
-  const initialValue = 12;
+const Timer = ({initialValue, nextExercise}) => {
+
   const [timerValue, setTimerValue] = useState(initialValue);
+  const [minutes, setMinutes] = useState(Math.floor(initialValue / 60));
+  const [seconds, setSeconds] = useState(initialValue % 60);
   const [isActive, setIsActive] = useState(false);
   const [audio, setAudio] = useState(null);
 
@@ -25,23 +27,28 @@ const Timer = () => {
     }
   };
 
+
   useEffect(() => {
     let interval;
-
+  
     if (isActive && timerValue > 0) {
       interval = setInterval(() => {
         setTimerValue(timerValue - 1);
+        setMinutes(Math.floor((timerValue - 1) / 60));
+        setSeconds((timerValue - 1) % 60);
       }, 1000);
     } else {
       clearInterval(interval);
     }
-
+  
     if (timerValue === 0 && isActive) {
       playAudio();
     }
-
+  
     return () => clearInterval(interval);
   }, [isActive, timerValue]);
+
+
 
   const resetTimer = () => {
     setTimerValue(initialValue);
@@ -62,7 +69,7 @@ const Timer = () => {
         <Circle
           cx={radius}
           cy={radius}
-          r={radius}
+          r="100"
           strokeWidth={strokeWidth}
           stroke="#ddd"
           fill="transparent"
@@ -70,7 +77,7 @@ const Timer = () => {
         <AnimatedCircle
           cx={radius}
           cy={radius}
-          r={radius}
+          r="100"
           strokeWidth={strokeWidth}
           stroke="#00ff00"
           fill="transparent"
@@ -78,7 +85,7 @@ const Timer = () => {
           strokeDasharray={`${circleCircumference}, ${circleCircumference}`}
           strokeDashoffset={circleCircumference - progress}
         />
-        <Text style={styles.timerText}>{timerValue}</Text>
+        <Text style={styles.timerText}>{minutes < 10 ? '0' : ''}{minutes}:{seconds < 10 ? '0' : ''}{seconds}</Text>
       </Svg>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={toggleTimer} style={styles.button}>
@@ -92,7 +99,7 @@ const Timer = () => {
         </TouchableOpacity>
         
       </View>
-      <TouchableOpacity onPress={stopAudio} style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => {nextExercise(); stopAudio();}}>
           <Text style={styles.buttonText}>NEXT</Text>
         </TouchableOpacity>
     </View>
@@ -105,7 +112,6 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
