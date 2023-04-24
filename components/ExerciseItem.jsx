@@ -1,16 +1,36 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity,Modal} from 'react-native';
 import { Icon } from 'react-native-elements';
+import Timer from './Timer';
 
-function ExerciseItem({ onRemoveExercise, title, repetitions, minutes, seconds, id}) {
+function ExerciseItem({ onDecreaseRepetitions, onRemoveExercise, title, repetitions, minutes, seconds, id}) {
+
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+
+
+
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const hideModal = () => {
+    setIsModalVisible(false);
+  };
 
 
 
   const removeExercise = (id) => {
     onRemoveExercise(id);
-    console.log(id);
   };
+
+  const decreaseRepetitions = (id) => {
+    onDecreaseRepetitions(id);
+  };
+
+
 
   return (
     <View style={styles.container}>
@@ -46,11 +66,14 @@ function ExerciseItem({ onRemoveExercise, title, repetitions, minutes, seconds, 
             {minutes} min {seconds} sec
           </Text>
           <TouchableOpacity style={styles.iconContainer}>
-            <Icon name="fitness-center" type="material" size={24} />
+            <Icon name="fitness-center" type="material" size={24} onPress={() => {decreaseRepetitions(id);}}/>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
       </View>
+
+
+
   
 
     </View>
@@ -110,3 +133,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 20, // Aggiungi un po' di margine orizzontale tra i bottoni
   },
 });
+
+/* 
+
+      <Modal visible={isModalVisible} animationType="slide">
+        <View>
+          <Timer></Timer>
+        </View>
+      </Modal>
+
+      */
